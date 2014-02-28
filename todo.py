@@ -5,6 +5,7 @@ import argparse
 import sys
 import json
 import os
+import shutil
 
 
 
@@ -16,8 +17,11 @@ import os
 # parser.add_argument("show", help="List the todo list for this project", action="store_true")
 
 # todo: Load config/constants
-CONFIG_FILENAME = os.path.join(os.getcwd(), ".todo_savedata.json")
-TODO_FILENAME = os.path.join(os.getcwd(), ".todo.list")
+CONFIG_FILENAME = os.path.join(os.getcwd(), 'todosavedata.json')
+TODO_FILENAME = os.path.join(os.getcwd(), 'todo.list')
+
+print CONFIG_FILENAME
+print TODO_FILENAME
 
 # Check if save data file is already there
 if(os.path.exists(os.path.join(os.path.dirname(__file__), CONFIG_FILENAME))):
@@ -138,9 +142,18 @@ elif (sys.argv[1] == "show" or sys.argv[1] == "list"):
 elif sys.argv[1] == "purge":
     ans = raw_input("Are you sure you want to delete and remove all traces of todos? (y/n): ")
     if ans == 'y':
-        os.remove(CONFIG_FILENAME)
-        os.remove(TODO_FILENAME)
-        print "Everything deleted"
+        if os.path.isfile(CONFIG_FILENAME):
+            os.remove(str(CONFIG_FILENAME))
+            print "Removed config file."
+        else:
+            print "Could not delete save data file"
+
+        if os.path.isfile(TODO_FILENAME):
+            os.remove(str(TODO_FILENAME))
+            print "Removed todo file"
+        else:
+            print "Could not delete todo file"
+
     else:
         print "Aborting deletion"
 
