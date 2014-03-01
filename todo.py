@@ -39,7 +39,7 @@ class bcolors:
 
 class Status:
     PENDING = "PENDING"
-    DONE = "DONE"
+    DONE = "   DONE"
 
 ########################################################################
 # Helper Fuctions: usage() nextID()
@@ -55,6 +55,7 @@ def usage():
     print "\ttodo undo                               | Undo a 'DONE' todo. Make it pending again."
     print "\ttodo purge|reset                        | Delete all todos and todo savedata for the cwd"
     print "\ttodo help                               | Show this help"
+    print "\ttodo pop                                | Remove the LAST todo from the list"
     print
 
 def nextID():
@@ -150,6 +151,14 @@ def showTodos():
     except IOError:
         print "No todos created for this directory yet"
 
+def resetID(id):
+    config['lastid'] = int(id)
+    print "Todo ID counter reset to " + str(config['lastid'])
+
+def popTodo():
+    removeTodo(str(config['lastid']))
+    config['lastid'] = config['lastid'] - 1
+    print "Popped last todo"
 
 ########################################################################
 # Parse command line arguments
@@ -178,8 +187,14 @@ elif sys.argv[1] == "remove" or sys.argv[1] == "delete" or sys.argv[1] == "del" 
 elif sys.argv[1] == "show" or sys.argv[1] == "list":
     showTodos()
 
+elif sys.argv[1] == "pop":
+    popTodo()
+
 elif sys.argv[1] == "help":
     usage()
+
+elif sys.argv[1] == "reset":
+    resetID(sys.argv[2])
 
 elif sys.argv[1] == "purge":
     ans = raw_input("Are you sure you want to delete and remove all traces of todos? (y/n): ")
