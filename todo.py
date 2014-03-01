@@ -46,12 +46,16 @@ class Status:
 ########################################################################
 
 def usage():
-    print "Usage:"
-    print "todo new <new todo>              | Create a new todo"
-    print "todo complete|done <todo-id>     | Mark a todo as complete"
-    print "todo remove|delete <todo-id>     | Remote a todo"
-    print "todo show|list                   | List all todos"
-    print "todo purge|reset                 | Delete all todos and todo savedata for the cwd"
+    print "\nUsage:"
+    print "\ttodo                                    | List the todos for the current directory"
+    print "\ttodo show|list                          | Same as 'todo'"
+    print "\ttodo new <new todo>                     | Create a new todo"
+    print "\ttodo complete|done <todo-id>            | Mark a todo as complete"
+    print "\ttodo remove|rm|delete|del <todo-id>     | Remove a todo"
+    print "\ttodo undo                               | Undo a 'DONE' todo. Make it pending again."
+    print "\ttodo purge|reset                        | Delete all todos and todo savedata for the cwd"
+    print "\ttodo help                               | Show this help"
+    print
 
 def nextID():
     return str(int(config['lastid']) + 1)
@@ -151,10 +155,13 @@ def showTodos():
 # Parse command line arguments
 ########################################################################
 
-if sys.argv[1] == "new":
-        content = " ".join(sys.argv[2:])
-        newTodo(content)
-        print "Added todo #" + str(config['lastid'])
+if len(sys.argv) == 1:
+    showTodos()
+
+elif sys.argv[1] == "new":
+    content = " ".join(sys.argv[2:])
+    newTodo(content)
+    print "Added todo #" + str(config['lastid'])
 
 elif sys.argv[1] == "complete" or sys.argv[1] == "done":
     completeTodo(sys.argv[2])
@@ -162,7 +169,7 @@ elif sys.argv[1] == "complete" or sys.argv[1] == "done":
 elif sys.argv[1] == "undo":
     undoTodo(sys.argv[2])
 
-elif sys.argv[1] == "remove" or sys.argv[1] == "delete":
+elif sys.argv[1] == "remove" or sys.argv[1] == "delete" or sys.argv[1] == "del" or sys.argv[1] == "rm":
     if len(sys.argv) < 3:
         print "You must specify a todo ID to remove."
     else:
@@ -170,6 +177,9 @@ elif sys.argv[1] == "remove" or sys.argv[1] == "delete":
 
 elif sys.argv[1] == "show" or sys.argv[1] == "list":
     showTodos()
+
+elif sys.argv[1] == "help":
+    usage()
 
 elif sys.argv[1] == "purge":
     ans = raw_input("Are you sure you want to delete and remove all traces of todos? (y/n): ")
