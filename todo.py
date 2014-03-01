@@ -1,29 +1,18 @@
 #!/usr/local/bin/python
 __author__ = "Ryan Plyler"
-__version__ = 0.1
-import argparse
+__version__ = 0.2
+
 import sys
 import json
 import os
-import shutil
 
+########################################################################
+# Load config and other related things
+########################################################################
 
-
-# parser = argparse.ArgumentParser()
-#
-# parser.add_argument("new", help="Create new todo", action="store_true")
-# parser.add_argument("complete", help="Mark a task as completed", action="store_true")
-# parser.add_argument("remove", help="Remove task from the list", action="store_true")
-# parser.add_argument("show", help="List the todo list for this project", action="store_true")
-
-# todo: Load config/constants
 CONFIG_FILENAME = os.path.join(os.getcwd(), 'todosavedata.json')
 TODO_FILENAME = os.path.join(os.getcwd(), 'todo.list')
 
-print CONFIG_FILENAME
-print TODO_FILENAME
-
-# Check if save data file is already there
 if(os.path.exists(os.path.join(os.path.dirname(__file__), CONFIG_FILENAME))):
     # Load the existing config
     config = json.load(open(CONFIG_FILENAME))
@@ -32,6 +21,9 @@ else:
     config = {"lastid": 0}
     json.dump(config, open(CONFIG_FILENAME, 'w'))
 
+########################################################################
+# Global Classes: bcolors Status
+########################################################################
 
 class bcolors:
     HEADER = '\033[95m'
@@ -49,6 +41,10 @@ class Status:
     PENDING = "PENDING"
     DONE = "DONE"
 
+########################################################################
+# Helper Fuctions: usage() nextID()
+########################################################################
+
 def usage():
     print "Usage:"
     print "todo new <new todo>              | Create a new todo"
@@ -59,6 +55,12 @@ def usage():
 
 def nextID():
     return str(int(config['lastid']) + 1)
+
+########################################################################
+# Core functionality functions:
+# newTodo() removeTodo(id) completeTodo(id) undoTodo(id)
+# showTodos()
+########################################################################
 
 def newTodo(content):
     formmated = bcolors.WHITE + "[" + nextID() + "] " + bcolors.ENDC + Status.PENDING + ": " + content + "\n"
@@ -108,6 +110,28 @@ def completeTodo(id):
     else:
         print "No todo #" + id + " found."
 
+def undoTodo(id):
+    oldFile = open(TODO_FILENAME, 'r')
+    lines = oldFile.readlines()
+    oldFile.close()
+    todoCompleted = False
+    newFile = open(TODO_FILENAME, 'w')
+    idFormmated = "[" + str(id) + "]"
+
+    for line in lines:
+        if idFormmated in line:
+            line = line.replace(Status.DONE, Status.PENDING)
+            newFile.write(line)
+            todoCompleted = True
+        else:
+            newFile.write(line)
+
+    newFile.close()
+    if todoCompleted:
+        print "Undid todo #" + id + " now its pending again..."
+    else:
+        print "No todo #" + id + " found."
+
 def showTodos():
     try:
         todoFile = open(TODO_FILENAME, 'r')
@@ -122,21 +146,29 @@ def showTodos():
     except IOError:
         print "No todos created for this directory yet"
 
-if (sys.argv[1] == "new"):
+
+########################################################################
+# Parse command line arguments
+########################################################################
+
+if sys.argv[1] == "new":
         content = " ".join(sys.argv[2:])
         newTodo(content)
         print "Added todo #" + str(config['lastid'])
 
-elif (sys.argv[1] == "complete" or sys.argv[1] == "done"):
+elif sys.argv[1] == "complete" or sys.argv[1] == "done":
     completeTodo(sys.argv[2])
 
-elif (sys.argv[1] == "remove" or sys.argv[1] == "delete"):
+elif sys.argv[1] == "undo":
+    undoTodo(sys.argv[2])
+
+elif sys.argv[1] == "remove" or sys.argv[1] == "delete":
     if len(sys.argv) < 3:
         print "You must specify a todo ID to remove."
     else:
         removeTodo(sys.argv[2])
 
-elif (sys.argv[1] == "show" or sys.argv[1] == "list"):
+elif sys.argv[1] == "show" or sys.argv[1] == "list":
     showTodos()
 
 elif sys.argv[1] == "purge":
@@ -161,5 +193,8 @@ else:
     print "Unknown operation: " + sys.argv[1]
     usage()
 
-# Save config exit
+########################################################################
+# Cleanup and exit
+########################################################################
+
 json.dump(config, open(CONFIG_FILENAME, 'w'))
