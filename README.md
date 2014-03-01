@@ -37,5 +37,5 @@ Usage:
 Troubleshooting
 =====
 1. Cannot run the todo.py program: `chmod +x todo.py`
-2. Bad interpreter: Change the deafult `#!/usr/local/bin/python` your python executable
+2. Bad interpreter: Change the deafult `#!/usr/local/bin/python` in `todo.py` to your python executable
 3. Operation problem: if you think its a bug, submit an issue on github and I will fix asap.
