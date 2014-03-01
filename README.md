@@ -17,7 +17,7 @@ basement code.
 Installation
 =====
 1. Clone the repo
-2. Add a symbolic link todo the `todo.py` (whereever you placed it)
+2. Create a symbolic link from `todo.py` to `/usr/bin/todo` (Use full paths to limit errors)
 
 Usage
 =====
