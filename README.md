@@ -4,6 +4,8 @@ todo
 An intuitive, uber-simple, directory based todo list manager for programmers.
 Work with a team? `todod` Server coming soon!
 
+![Todo in action](/screenshot.png)
+
 Rationale
 ====
 When I work on multiple projects and switch between them sometimes I forget
