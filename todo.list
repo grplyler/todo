@@ -1,0 +1,3 @@
+[97m[1] [0m   DONE: Fix a bug where we cant delete save data file with todo purge
+[97m[3] [0m   DONE: change completeTodo to changeStatus to be able to revert a todo status
+[97m[5] [0mPENDING: covnert todo to use a single json database
