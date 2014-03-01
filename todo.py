@@ -52,8 +52,9 @@ def usage():
     print "\ttodo new <new todo>                     | Create a new todo"
     print "\ttodo complete|done <todo-id>            | Mark a todo as complete"
     print "\ttodo remove|rm|delete|del <todo-id>     | Remove a todo"
-    print "\ttodo undo                               | Undo a 'DONE' todo. Make it pending again."
-    print "\ttodo purge|reset                        | Delete all todos and todo savedata for the cwd"
+    print "\ttodo undo <todo-id>                     | Undo a 'DONE' todo. Make it pending again."
+    print "\ttodo purge                              | Delete all todos and todo savedata for the cwd"
+    print "\ttodo reset <todo-id>                    | Reset"
     print "\ttodo help                               | Show this help"
     print "\ttodo pop                                | Remove the LAST todo from the list"
     print
