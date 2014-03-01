@@ -36,3 +36,5 @@ nosetests.xml
 .pydevproject
 .todosavedata.json
 todo.list
+savedata.json
+todosavedata.json
