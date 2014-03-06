@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 __author__ = "Ryan Plyler"
 __version__ = 0.2
 
