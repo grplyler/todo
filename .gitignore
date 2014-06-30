@@ -40,3 +40,6 @@ nosetests.xml
 todo.list
 savedata.json
 todosavedata.json
+
+# todo
+.todo.list
