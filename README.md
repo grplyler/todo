@@ -31,7 +31,7 @@ Usage:
 	todo complete|done <todo-id>            | Mark a todo as complete
 	todo remove|rm|delete|del <todo-id>     | Remove a todo
 	todo undo                               | Undo a 'DONE' todo. Make it pending again.
-	todo purge|reset                        | Delete all todos and todo savedata for the cwd
+	todo purge                              | Delete the .todo.list file for the cwd
 	todo help                               | Show this help
 	todo pop                                | Remove the LAST todo from the list
 ```
