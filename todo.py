@@ -7,19 +7,11 @@ import json
 import os
 
 ########################################################################
-# Load config and other related things
+# Config
 ########################################################################
 
-CONFIG_FILENAME = os.path.join(os.getcwd(), 'todosavedata.json')
-TODO_FILENAME = os.path.join(os.getcwd(), 'todo.list')
+TODO_FILENAME = os.path.join(os.getcwd(), '.todo.list')
 
-if(os.path.exists(os.path.join(os.path.dirname(__file__), CONFIG_FILENAME))):
-    # Load the existing config
-    config = json.load(open(CONFIG_FILENAME))
-else:
-    # Load the existing config and write the lastid = 0
-    config = {"lastid": 0}
-    json.dump(config, open(CONFIG_FILENAME, 'w'))
 
 ########################################################################
 # Global Classes: bcolors Status
@@ -54,13 +46,24 @@ def usage():
     print "\ttodo remove|rm|delete|del <todo-id>     | Remove a todo"
     print "\ttodo undo <todo-id>                     | Undo a 'DONE' todo. Make it pending again."
     print "\ttodo purge                              | Delete all todos and todo savedata for the cwd"
-    print "\ttodo reset <todo-id>                    | Reset"
     print "\ttodo help                               | Show this help"
-    print "\ttodo pop                                | Remove the LAST todo from the list"
     print
 
+def getLineCount():
+    with open(TODO_FILENAME) as f:
+        lines = f.readlines()
+        return len(lines)
+
+def readlines():
+    with open(TODO_FILENAME) as f:
+        lines = f.readlines()
+        linecount = len(lines)
+        return lines, linecount
+
 def nextID():
-    return str(int(config['lastid']) + 1)
+    """Get the the number of what the next todo ID should be"""
+    return getLineCount() + 1
+
 
 ########################################################################
 # Core functionality functions:
@@ -69,97 +72,133 @@ def nextID():
 ########################################################################
 
 def newTodo(content):
-    formmated = bcolors.WHITE + "[" + nextID() + "] " + bcolors.ENDC + Status.PENDING + ": " + content + "\n"
+    formmated = bcolors.WHITE + "[" + "%id" + "] " + bcolors.ENDC + Status.PENDING + ": " + content + "\n"
     with open(TODO_FILENAME, "a") as f:
         f.write(formmated)
-    config['lastid'] = config['lastid'] + 1
+    print "Added todo #%d" % getLineCount()
+
 
 def removeTodo(id):
-    oldFile = open(TODO_FILENAME, 'r')
-    lines = oldFile.readlines()
-    oldFile.close()
+    id = int(id)
+
+    lineCounter = 1
+    lines, linecount = readlines()
     todoRemoved = False
     newFile = open(TODO_FILENAME, 'w')
-    idFormmated = "[" + str(id) + "]"
 
     for line in lines:
-        if idFormmated in line:
-            todoRemoved = True
-        else:
+        # Write all the lines back to the file except the line number of id
+        if lineCounter is not id:
             newFile.write(line)
+        else:
+            todoRemoved = True
+
+        # increment the line counter
+        lineCounter += 1
+
 
     newFile.close()
     if todoRemoved:
-        print "Removed todo #" + id
+        print "Removed todo #%s" % id
     else:
-        print "No todo #" + id + " found."
+        print "No todo #%s found" % id
 
 def completeTodo(id):
-    oldFile = open(TODO_FILENAME, 'r')
-    lines = oldFile.readlines()
-    oldFile.close()
+    id = int(id)
+    lines, linecount = readlines()
     todoCompleted = False
     newFile = open(TODO_FILENAME, 'w')
-    idFormmated = "[" + str(id) + "]"
+    lineCounter = 1
 
     for line in lines:
-        if idFormmated in line:
+        # Write all the lines back to the file except the line number of id
+        if lineCounter == id:
             line = line.replace(Status.PENDING, Status.DONE)
             newFile.write(line)
             todoCompleted = True
         else:
             newFile.write(line)
 
+        # increment the line counter
+        lineCounter += 1
+
     newFile.close()
     if todoCompleted:
-        print "Completed todo #" + id
+        print "Completed todo #%s" % id
     else:
-        print "No todo #" + id + " found."
+        print "No todo #%s found." % id
 
 def undoTodo(id):
-    oldFile = open(TODO_FILENAME, 'r')
-    lines = oldFile.readlines()
-    oldFile.close()
+    # oldFile = open(TODO_FILENAME, 'r')
+    # lines = oldFile.readlines()
+    # oldFile.close()
+    # todoCompleted = False
+    # newFile = open(TODO_FILENAME, 'w')
+    # idFormmated = "[" + str(id) + "]"
+    #
+    # for line in lines:
+    #     if idFormmated in line:
+    #         line = line.replace(Status.DONE, Status.PENDING)
+    #         newFile.write(line)
+    #         todoCompleted = True
+    #     else:
+    #         newFile.write(line)
+    #
+    # newFile.close()
+    # if todoCompleted:
+    #     print "Undid todo #" + id + " now its pending again..."
+    # else:
+    #     print "No todo #" + id + " found."
+
+    id = int(id)
+    lines, linecount = readlines()
     todoCompleted = False
     newFile = open(TODO_FILENAME, 'w')
-    idFormmated = "[" + str(id) + "]"
+    lineCounter = 1
 
     for line in lines:
-        if idFormmated in line:
+        # Write all the lines back to the file except the line number of id
+        if lineCounter == id:
             line = line.replace(Status.DONE, Status.PENDING)
             newFile.write(line)
             todoCompleted = True
         else:
             newFile.write(line)
 
+        # increment the line counter
+        lineCounter += 1
+
     newFile.close()
     if todoCompleted:
-        print "Undid todo #" + id + " now its pending again..."
+        print "Undid todo #%s" % id
     else:
-        print "No todo #" + id + " found."
+        print "No todo #%s found." % id
 
 def showTodos():
+    lineCounter = 1
     try:
-        todoFile = open(TODO_FILENAME, 'r')
-        lines = todoFile.readlines()
+        lines, linecount = readlines()
         for line in lines:
+            # if Status.PENDING in line:
+            #     line = line.replace(Status.PENDING, bcolors.FAIL + Status.PENDING + bcolors.ENDC)
+            # elif Status.DONE in line:
+            #     line = line.replace(Status.DONE, bcolors.OKGREEN + Status.DONE + bcolors.ENDC)
+            # sys.stdout.write(line)
+
+            # Auto assign the todo ID based on the the line its on in the todo.list file
+            line = line.replace("%id", str(lineCounter))
             if Status.PENDING in line:
                 line = line.replace(Status.PENDING, bcolors.FAIL + Status.PENDING + bcolors.ENDC)
             elif Status.DONE in line:
                 line = line.replace(Status.DONE, bcolors.OKGREEN + Status.DONE + bcolors.ENDC)
+
             sys.stdout.write(line)
+            lineCounter += 1
+
 
     except IOError:
         print "No todos created for this directory yet"
 
-def resetID(id):
-    config['lastid'] = int(id)
-    print "Todo ID counter reset to " + str(config['lastid'])
-
-def popTodo():
-    removeTodo(str(config['lastid']))
-    config['lastid'] = config['lastid'] - 1
-    print "Popped last todo"
 
 ########################################################################
 # Parse command line arguments
@@ -171,7 +210,6 @@ if len(sys.argv) == 1:
 elif sys.argv[1] == "new":
     content = " ".join(sys.argv[2:])
     newTodo(content)
-    print "Added todo #" + str(config['lastid'])
 
 elif sys.argv[1] == "complete" or sys.argv[1] == "done":
     completeTodo(sys.argv[2])
@@ -188,24 +226,12 @@ elif sys.argv[1] == "remove" or sys.argv[1] == "delete" or sys.argv[1] == "del" 
 elif sys.argv[1] == "show" or sys.argv[1] == "list":
     showTodos()
 
-elif sys.argv[1] == "pop":
-    popTodo()
-
 elif sys.argv[1] == "help":
     usage()
-
-elif sys.argv[1] == "reset":
-    resetID(sys.argv[2])
 
 elif sys.argv[1] == "purge":
     ans = raw_input("Are you sure you want to delete and remove all traces of todos? (y/n): ")
     if ans == 'y':
-        if os.path.isfile(CONFIG_FILENAME):
-            os.remove(str(CONFIG_FILENAME))
-            print "Removed config file."
-        else:
-            print "Could not delete save data file"
-
         if os.path.isfile(TODO_FILENAME):
             os.remove(str(TODO_FILENAME))
             print "Removed todo file"
@@ -222,5 +248,3 @@ else:
 ########################################################################
 # Cleanup and exit
 ########################################################################
-
-json.dump(config, open(CONFIG_FILENAME, 'w'))
