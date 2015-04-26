@@ -1,6 +1,12 @@
 todo
 ====
 
+I have started a new project to replace this todo manager with
+a project based one with many improvements. But i will still leave this
+one here as a proof of concept or example.
+
+**See [td](https://github.com/grplyler/td) for better command line todo manager.**
+
 An intuitive, uber-simple, directory based todo list manager for programmers.
 Work with a team? `todod` Server coming soon!
 
